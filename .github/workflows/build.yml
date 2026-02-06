@@ -9,35 +9,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout config repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install system dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y \
-            python3-pip cmake ninja-build gperf \
-            device-tree-compiler wget xz-utils file git
-
-      - name: Install west (ZMK compatible)
-        run: |
-          pip3 install --user west==0.14.0
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Initialize west workspace from config
-        run: |
-          west init -l config
-
-      - name: Update modules (fetch ZMK + Zephyr)
-        run: |
-          west update
-
-      - name: Build firmware
-        run: |
-          west build -b nice_nano_v2 -s zmk/app -- -DSHIELD=emh_badge
-
-      - name: Upload firmware
-        uses: actions/upload-artifact@v4
+      - name: Cache west modules
+        uses: actions/cache@v4
         with:
-          name: nice_nano_v2-emh_badge-zmk
-          path: build/zephyr/zmk.uf2
+          path: |
+            ~/.cache/pip
+            ~/.west
+          key: ${{ runner.os }}-zmk
+
+      - name: Build ZMK firmware
+        uses: zmkfirmware/zmk-config-build-action@main
+        with:
+          board: nice_nano_v2
+          shield: emh_badge
