@@ -24,11 +24,11 @@ jobs:
           pip3 install --user west==0.14.0
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Initialize west workspace with ZMK
+      - name: Initialize west workspace from config
         run: |
-          west init -m https://github.com/zmkfirmware/zmk.git --mr main
+          west init -l config
 
-      - name: Update modules (fetch Zephyr)
+      - name: Update modules (fetch ZMK + Zephyr)
         run: |
           west update
 
