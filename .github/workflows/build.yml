@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout config repo
         uses: actions/checkout@v4
 
       - name: Install system dependencies
@@ -19,16 +19,16 @@ jobs:
             python3-pip cmake ninja-build gperf \
             device-tree-compiler wget xz-utils file git
 
-      - name: Install west (pinned for ZMK)
+      - name: Install west (ZMK compatible)
         run: |
           pip3 install --user west==0.14.0
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Initialize west workspace
+      - name: Initialize west workspace with ZMK
         run: |
-          west init
+          west init -m https://github.com/zmkfirmware/zmk.git --mr main
 
-      - name: Update modules
+      - name: Update modules (fetch Zephyr)
         run: |
           west update
 
